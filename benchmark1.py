@@ -6,6 +6,7 @@ import re
 import os
 path = os.getcwd()
 
+
 rcc_train = pd.read_csv(path + "\\kaggle\\rcc_train.csv")
 se_train = pd.read_csv(path + "\\kaggle\\se_train.csv", index_col="key_value")
 censo_train = pd.read_csv(path + "\\kaggle\\censo_train.csv", index_col="key_value")
@@ -14,7 +15,6 @@ y_train = pd.read_csv(path + "\\kaggle\\y_train.csv", index_col="key_value").tar
 rcc_test= pd.read_csv(path + "\\kaggle\\rcc_test.csv")
 se_test= pd.read_csv(path + "\\kaggle\\se_test.csv", index_col="key_value")
 censo_test= pd.read_csv(path + "\\kaggle\\censo_test.csv", index_col="key_value")
-
 
 
 bins = [-1, 0, 10, 20, 30, 60, 90, 180, 360, 720, float("inf")]
