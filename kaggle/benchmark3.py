@@ -50,7 +50,6 @@ gc.collect()
 train = pd.concat(train, axis=1)
 test = pd.concat(test, axis=1)
 
-sunat_train
 pd.crosstab(sunat_train.key_value, sunat_train.ciiu)
 
 train = train.join(pd.crosstab(sunat_train.key_value, sunat_train.ciiu)).join(se_train)
@@ -69,9 +68,14 @@ train = train.rename(columns = lambda x:re.sub('[^A-Za-z0-9_-]+', '', x))
 test.columns = [str(c) for c in test.columns]
 test = test.rename(columns = lambda x:re.sub('[^A-Za-z0-9_-]+', '', x))
 
+train.to_csv("train_bench.csv")
+test.to_csv("test_bench.csv")
+
+#Tuning hyperparametres Here
+
+
 folds = [train.index[t] for t, v in KFold(5).split(train)]
 
-#Tuning hyperparametres
 
 from sklearn.model_selection import ParameterGrid
 
@@ -108,3 +112,18 @@ for param in params:
 
 best_probs.name = "target"
 best_probs.to_csv("benchmark3.csv")
+
+feature_imp = pd.DataFrame(sorted(zip(learner.feature_importances_,train.columns)), columns=['Value','Feature'])
+feature_imp.to_csv("feature_imp.csv")
+
+
+feature_imp_filter = feature_imp[270:]
+del feature_imp_filter['Value']
+
+keep_cols = list(feature_imp_filter.values)#.intersection(set(train.columns)))
+
+keep_cols = feature_imp_filter.values.tolist()
+
+test1 = test.copy()
+test1 = test1[keep_cols]
+test1 = test1[keep_cols]
