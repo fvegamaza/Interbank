@@ -18,8 +18,8 @@ y_train = pd.read_csv(path + "\\kaggle\\y_train.csv", index_col="key_value").tar
 #train_select = train[feature_imp_list]
 
 #Check if the data is logical
-plt.hist(train["dto"])#, range= (0,0.43697))
-train["RIESGO_DIRECTO_max_1"]
+plt.hist(train["tipo_credito_max_12"], range= (-0.1,1))
+train["tipo_credito_max_12"]
 
 #Cod_ubi ############################
 train["cod_ubi"].value_counts().head(15)
@@ -28,7 +28,7 @@ train.cod_ubi.std()
 cod_ubi_unique = train["cod_ubi"].unique()
 cod_ubi_unique_sorted = np.sort(cod_ubi_unique)
 
-np.set_printoptions(edgeitems=30)
+np.set_printoptions(edgeitems=45)
 np.diff(cod_ubi_unique_sorted)#most of the values are 1.13659769e-05
 np.diff(cod_ubi_unique_sorted/0.000011365976900000001)
 
@@ -68,3 +68,24 @@ for i in new_cod_ubi:
     new_var.append(result)
 new_var = pd.DataFrame(new_var,columns=["edad_reverse"])
 new_var["edad_reverse"].value_counts().head(20).sum()
+
+
+#Provinciaaaaaaaa
+train["dto"].value_counts()
+train.prv.mean()
+train.prv.std()
+
+
+#Riesgodirecto
+train["RIESGO_DIRECTO_max_1"].value_counts().head()
+train.RIESGO_DIRECTO_max_1.mean()
+train.RIESGO_DIRECTO_max_1.std()
+riesgo_directo_max_unique = train["RIESGO_DIRECTO_max_1"].unique()
+riesgo_directo_max_unique_sorted = np.sort(riesgo_directo_max_unique)
+np.diff(riesgo_directo_max_unique_sorted)
+np.diff(riesgo_directo_max_unique_sorted/0.0000111972883)
+
+
+#Is_duplicated
+train["is_duplicate"] = train.duplicated()
+a = train.loc[(train['is_duplicate']==True)]
