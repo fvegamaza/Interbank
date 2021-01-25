@@ -89,3 +89,7 @@ np.diff(riesgo_directo_max_unique_sorted/0.0000111972883)
 #Is_duplicated
 train["is_duplicate"] = train.duplicated()
 a = train.loc[(train['is_duplicate']==True)]
+
+#Reempla na with -999 or implement xgboost
+
+from xgboost import XGBClassifier
