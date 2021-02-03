@@ -68,47 +68,59 @@ train = train.rename(columns = lambda x:re.sub('[^A-Za-z0-9_-]+', '', x))
 test.columns = [str(c) for c in test.columns]
 test = test.rename(columns = lambda x:re.sub('[^A-Za-z0-9_-]+', '', x))
 
-train.to_csv("train_bench.csv")
-test.to_csv("test_bench.csv")
+#Read dataseeeeeeeeeeeeeeeets
 
-#Tuning hyperparametres Here
-
-
-folds = [train.index[t] for t, v in KFold(5).split(train)]
+train = pd.read_csv(path + "\\train_bench.csv",index_col="key_value")
+test = pd.read_csv(path + "\\test_bench.csv",index_col="key_value")
+y_train = pd.read_csv(path + "\\kaggle\\y_train.csv", index_col="key_value").target
 
 
-from sklearn.model_selection import ParameterGrid
+from sklearn.model_selection import RandomizedSearchCV
+model = XGBClassifier()
+model.fit(train,y_train)
+predict_train = model.predict_proba(train)
 
-params = ParameterGrid({"min_child_samples": [150, 250, 500, 1000], "boosting_type": ["gbdt", "goss"]})
+accuracy_train = accuracy_score(y_train,predict_train)
+print('\naccuracy_score on train dataset : ', accuracy_train)
 
-best_score = 0
-best_probs = []
-for param in params:
-    test_probs = []
-    train_probs = []
-    p  = "///".join([f"{k}={v}" for k, v in param.items()])
-    print("*"*10, p, "*"*10)
-    for i, idx in enumerate(folds):
-        Xt = train.loc[idx]
-        yt = y_train.loc[Xt.index]
+predict_test = model.predict_proba(test)
+accuracy_score(test,predict_test)
+predict_test_result = pd.DataFrame()
+predict_test_result["target"]
+predict_test[:,0]
+prediction = []
 
-        Xv = train.drop(Xt.index)
-        yv = y_train.loc[Xv.index]
 
-        learner = LGBMClassifier(n_estimators=1000, **param)
-        learner.fit(Xt, yt,  early_stopping_rounds=10, eval_metric="auc",
-                    eval_set=[(Xt, yt), (Xv, yv)], verbose=False)
-        test_probs.append(pd.Series(learner.predict_proba(test)[:, -1], index=test.index, name="fold_" + str(i)))
-        train_probs.append(pd.Series(learner.predict_proba(Xv)[:, -1], index=Xv.index, name="probs"))
+predict_test_result["target"] = predict_test[:,1]
+predict_test_result.to_csv("benchmark3_xgboost.csv")
+print(predict_test_result.index.name)# = "key_value"
+np.count_nonzero(y_train == 1)
 
-    test_probs = pd.concat(test_probs, axis=1).mean(axis=1)
-    train_probs = pd.concat(train_probs)
-    score = roc_auc_score(y_train, train_probs.loc[y_train.index])
-    print(f"roc auc estimado para {p}: {score}")
-    if score > best_score:
-        print("*"*10, f"{p} es el nuevo mejor modelo", "*"*10)
-        best_score = score
-        best_probs = test_probs
+# A parameter grid for XGBoost
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
 
-best_probs.name = "target"
-best_probs.to_csv("benchmark3_xgboost.csv")
+estimator = XGBClassifier(
+    objective= 'reg:squarederror',
+    nthread=4,
+    seed=42
+)
+
+parameters = {
+    'max_depth': range (2, 10, 1),
+    'n_estimators': range(60, 220, 40),
+    'learning_rate': [0.1, 0.01, 0.05]
+}
+
+grid_search = GridSearchCV(
+    estimator=estimator,
+    param_grid=parameters,
+    scoring = 'roc_auc',
+    n_jobs = 10,
+    cv = 10,
+    verbose=True
+)
+
+grid_search.fit(train, y_train)
+
+grid_search.best_estimator_

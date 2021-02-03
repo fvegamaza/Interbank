@@ -91,5 +91,7 @@ train["is_duplicate"] = train.duplicated()
 a = train.loc[(train['is_duplicate']==True)]
 
 #Reempla na with -999 or implement xgboost
+train.isnull().sum()
+
 
 from xgboost import XGBClassifier
