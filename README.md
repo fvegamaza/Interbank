@@ -1,6 +1,9 @@
 # Dathathon Interbank - Top %54 (294 teams)
 > _[Kaggle competition](https://www.kaggle.com/c/interbank20/overview)_
 
+## What was about?
+A kaggle competition where I had to predict a scoring of default
+
 ## My experience through this
 I think it was the first time that I got into the compete alone but with some tools that I've learned in this long knowledge path.
 
